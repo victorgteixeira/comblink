@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Smart Link • Gerador de QR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind (dev) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon usando a logo -->
+  <link rel="icon" type="image/png" href="/static/COMBLINK.png" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  <!-- Top Bar -->
+  <header class="border-b border-slate-800/70 bg-slate-950/40 backdrop-blur">
+    <div class="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Logo COMBLINK -->
+        <img src="/static/COMBLINK.png" alt="Logo Comblink" class="h-12 w-auto drop-shadow-md">
+        <span class="font-semibold tracking-tight text-lg">COMBLINK</span>
+      </div>
+      <span class="text-xs text-slate-400">QR dinâmico • iOS / Android</span>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-6 py-10">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-semibold tracking-tight">Gerar QR com redirecionamento inteligente</h1>
+      <p class="mt-2 text-slate-300/90 max-w-xl mx-auto">
+        Cole os links da <span class="font-medium text-slate-200">App Store (iOS)</span> e da
+        <span class="font-medium text-slate-200">Google Play (Android)</span>. Você pode definir um <em>slug</em> e uma URL de fallback para desktop.
+      </p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Card: Formulário -->
+      <section class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-2xl shadow-black/20 ring-1 ring-white/5">
+        <form id="linkForm" method="post" action="/api/links" class="grid gap-5">
+          <!-- iOS -->
+          <div>
+            <label for="iosUrl" class="mb-1 block text-sm text-slate-300">Link iOS (App Store)</label>
+            <input id="iosUrl" type="url" required
+              placeholder="https://apps.apple.com/app/id123..."
+              class="w-full rounded-xl bg-slate-800/70 px-3 py-2.5 border border-slate-700/70 outline-none focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-400/50 placeholder:text-slate-500" />
+            <p class="mt-1 text-xs text-slate-400">Ex.: <code>https://apps.apple.com/...</code></p>
+          </div>
+
+          <!-- Android -->
+          <div>
+            <label for="androidUrl" class="mb-1 block text-sm text-slate-300">Link Android (Google Play)</label>
+            <input id="androidUrl" type="url" required
+              placeholder="https://play.google.com/store/apps/details?id=..."
+              class="w-full rounded-xl bg-slate-800/70 px-3 py-2.5 border border-slate-700/70 outline-none focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-400/50 placeholder:text-slate-500" />
+            <p class="mt-1 text-xs text-slate-400">Ex.: <code>https://play.google.com/store/apps/details?id=...</code></p>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2">
+            <!-- Slug -->
+            <div>
+              <label for="slug" class="mb-1 block text-sm text-slate-300">Slug (opcional)</label>
+              <input id="slug" type="text" placeholder="meuapp"
+                class="w-full rounded-xl bg-slate-800/70 px-3 py-2.5 border border-slate-700/70 outline-none focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-400/50 placeholder:text-slate-500" />
+              <p class="mt-1 text-xs text-slate-400">Será usado em <code>/l/slug</code>.</p>
+            </div>
+
+            <!-- Desktop URL -->
+            <div>
+              <label for="desktopUrl" class="mb-1 block text-sm text-slate-300">URL Desktop (opcional)</label>
+              <input id="desktopUrl" type="url" placeholder="https://seusite.com/app"
+                class="w-full rounded-xl bg-slate-800/70 px-3 py-2.5 border border-slate-700/70 outline-none focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-400/50 placeholder:text-slate-500" />
+              <p class="mt-1 text-xs text-slate-400">Para quem abrir no PC (fallback).</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-1">
+            <button class="inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 font-medium shadow-lg shadow-cyan-900/30 transition hover:bg-cyan-500 focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900">
+              Gerar
+            </button>
+            <span id="status" class="text-sm text-slate-400"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Card: Resultado -->
+      <section id="result" class="hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-2xl shadow-black/20 ring-1 ring-white/5">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="/static/COMBLINK.png" alt="Logo Comblink" class="h-6 w-auto">
+          <h2 class="text-xl font-semibold">Seu Comblink está pronto</h2>
+        </div>
+        <p class="mt-1 text-sm text-slate-400">Aponte o QR para este endereço. O redirecionamento iOS/Android é automático.</p>
+
+        <div class="mt-5 grid gap-6 md:grid-cols-[1fr_auto] items-center">
+          <div>
+            <div class="text-xs uppercase tracking-wide text-slate-400">URL inteligente</div>
+            <div class="mt-2 flex items-center gap-3">
+              <a id="smartUrl" href="#" target="_blank" rel="noopener"
+                 class="max-w-full break-all rounded-lg border border-slate-700/70 bg-slate-800/60 px-3 py-2 text-cyan-400 underline decoration-cyan-400/50 hover:text-cyan-300 hover:decoration-cyan-300"></a>
+              <button id="copyBtn" class="rounded-lg border border-slate-700/70 bg-slate-800/70 px-3 py-2 text-sm transition hover:bg-slate-800 focus:ring-2 focus:ring-cyan-400">
+                Copiar
+              </button>
+            </div>
+          </div>
+
+          <div class="justify-self-end text-center">
+            <div class="rounded-xl border border-slate-800 bg-slate-800/40 p-2">
+              <img id="qrImg" alt="QR Code" class="w-48 h-48 rounded-lg" />
+            </div>
+            <div class="mt-2 text-xs text-slate-400">Baixe/importe essa imagem</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="mt-12 border-t border-slate-800/70 py-6 text-center text-xs text-slate-500">
+    <img src="/static/COMBLINK.png" alt="Logo Comblink" class="mx-auto h-24 mb-1 opacity-90">
+    © <span id="y"></span> — Comblink, Todos os direitos reservados
+  </footer>
+
+  <!-- JS da página -->
+  <script src="/views/create.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('y'); if (el) el.textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>

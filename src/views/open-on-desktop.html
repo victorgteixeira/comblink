@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abrir no seu celular</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
+  <div class="max-w-md w-full text-center">
+    <h1 class="text-2xl font-semibold mb-3">Baixe nosso app</h1>
+    <p class="text-slate-300 mb-6">Escaneie o QR pelo celular ou escolha sua loja abaixo:</p>
+
+    <div class="grid gap-3">
+      <a id="iosBtn" class="rounded-xl bg-white/10 hover:bg-white/20 px-5 py-3"
+         href="#" target="_blank" rel="noopener">App Store (iOS)</a>
+      <a id="androidBtn" class="rounded-xl bg-white/10 hover:bg-white/20 px-5 py-3"
+         href="#" target="_blank" rel="noopener">Google Play (Android)</a>
+    </div>
+
+    <p class="mt-8 text-xs text-slate-400">Abra este link no celular para redirecionar automaticamente.</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const ios = params.get('ios');
+    const and = params.get('android');
+    if (ios) document.getElementById('iosBtn').href = ios;
+    if (and) document.getElementById('androidBtn').href = and;
+  </script>
+</body>
+</html>
