@@ -1,3 +1,4 @@
+
 node_modules
 .npm
 .env
@@ -11,7 +12,6 @@ generated
 prisma/migrations
 **/node_modules
 *.tgz
-Dockerfile
 docker-compose*.yml
 __pycache__
 *.pyc
